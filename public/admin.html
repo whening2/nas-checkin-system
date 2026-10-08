@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>签到管理</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f2f4f8;margin:0;padding:16px;color:#1f2937;font-size:15px}
+.wrap{max-width:600px;margin:0 auto}
+h1{font-size:20px;margin:0 0 16px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.card h2{font-size:16px;margin:0 0 12px;color:#374151}
+input{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none}
+input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.btn{width:100%;padding:13px;font-size:16px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer;margin-top:10px}
+.btn:disabled{opacity:.6}
+.btn-green{background:#16a34a}
+.btn-orange{background:#ea580c}
+.row{display:flex;gap:10px;margin-top:10px}
+.row .btn{margin-top:0}
+.stat{color:#6b7280;font-size:14px;margin:8px 0 0}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+th,td{padding:9px 10px;text-align:left;font-size:13px;border-bottom:1px solid #e5e7eb}
+th{background:#f9fafb;font-weight:600;color:#374151}
+tr:last-child td{border-bottom:0}
+#qrBox{text-align:center;padding:16px;display:none}
+#qrBox canvas,#qrBox img{max-width:100%}
+#link{word-break:break-all;font-size:13px;color:#2563eb;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📋 签到管理后台</h1>
+
+  <div class="card">
+    <h2>🔗 签到二维码</h2>
+    <input id="domain" placeholder="输入你的DDNS域名，如 checkin.example.com" style="margin-bottom:10px">
+    <button class="btn btn-orange" onclick="genQR()">生成签到二维码</button>
+    <div id="qrBox">
+      <div id="qrcode"></div>
+      <div id="link"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📊 签到记录</h2>
+    <input id="pwd" type="password" placeholder="输入管理密码" style="margin-bottom:10px">
+    <div class="row">
+      <button class="btn" onclick="load()">查询记录</button>
+      <button class="btn btn-green" onclick="exportCsv()">导出 CSV</button>
+    </div>
+    <div class="stat" id="stat"></div>
+    <div style="overflow-x:auto;margin-top:10px">
+      <table id="tbl">
+        <thead><tr><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="/qrcode.min.js"></script>
+<script>
+let pwd = '';
+
+function genQR(){
+  var domain = document.getElementById('domain').value.trim();
+  if(!domain){alert('请输入你的DDNS域名');return;}
+  var url = 'http://' + domain + '/';
+  document.getElementById('link').textContent = url;
+  document.getElementById('qrBox').style.display = 'block';
+  document.getElementById('qrcode').innerHTML = '';
+  new QRCode(document.getElementById('qrcode'), {
+    text: url, width: 220, height: 220,
+    colorDark: '#1f2937', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+}
+
+function load(){
+  pwd = document.getElementById('pwd').value;
+  fetch('/admin/records?pwd=' + encodeURIComponent(pwd))
+    .then(r=>r.json()).then(j=>{
+      if(!j.ok){alert(j.msg||'密码错误');return;}
+      const tb = document.querySelector('#tbl tbody');
+      tb.innerHTML = j.data.map(r =>
+        `<tr><td>${r.name}</td><td>${r.phone}</td><td>${r.org}</td><td>${r.time}</td></tr>`
+      ).join('');
+      document.getElementById('stat').textContent = '共 ' + j.total + ' 人签到';
+    });
+}
+
+function exportCsv(){
+  if(!pwd){alert('请先输入密码并查询');return;}
+  window.open('/admin/export?pwd=' + encodeURIComponent(pwd));
+}
+
+setInterval(()=>{ if(pwd) load(); }, 15000);
+</script>
+</body>
+</html>

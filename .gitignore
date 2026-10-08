@@ -1,0 +1,19 @@
+# 忽略依赖
+node_modules/
+
+# 忽略打包的镜像文件
+*.tar
+
+# 忽略本地数据库和数据
+checkin-data/
+*.db
+
+# 忽略环境变量文件
+.env
+.env.*
+
+# 忽略 Mac 系统文件
+.DS_Store
+
+# 忽略日志
+npm-debug.log*
