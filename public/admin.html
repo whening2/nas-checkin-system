@@ -4,100 +4,227 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
-<title>签到管理</title>
+<title>签到管理后台</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f2f4f8;margin:0;padding:16px;color:#1f2937;font-size:15px}
-.wrap{max-width:600px;margin:0 auto}
+.wrap{max-width:800px;margin:0 auto}
 h1{font-size:20px;margin:0 0 16px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .card h2{font-size:16px;margin:0 0 12px;color:#374151}
-input{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none}
-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-.btn{width:100%;padding:13px;font-size:16px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer;margin-top:10px}
+input,select{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none;margin-bottom:10px}
+input:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.btn{padding:13px 20px;font-size:16px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer}
 .btn:disabled{opacity:.6}
 .btn-green{background:#16a34a}
 .btn-orange{background:#ea580c}
-.row{display:flex;gap:10px;margin-top:10px}
-.row .btn{margin-top:0}
-.stat{color:#6b7280;font-size:14px;margin:8px 0 0}
-table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden}
+.btn-red{background:#dc2626}
+.btn-sm{padding:8px 12px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;margin-top:10px}
 th,td{padding:9px 10px;text-align:left;font-size:13px;border-bottom:1px solid #e5e7eb}
 th{background:#f9fafb;font-weight:600;color:#374151}
 tr:last-child td{border-bottom:0}
-#qrBox{text-align:center;padding:16px;display:none}
+.stat{color:#6b7280;font-size:14px;margin:8px 0 0}
+#qrBox{text-align:center;padding:16px;display:none;margin-top:10px;border-top:1px solid #e5e7eb}
 #qrBox canvas,#qrBox img{max-width:100%}
-#link{word-break:break-all;font-size:13px;color:#2563eb;margin-top:8px}
+.link{word-break:break-all;font-size:13px;color:#2563eb;margin-top:8px}
+.hidden{display:none}
+.meeting-item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
+.meeting-item:last-child{border-bottom:0}
+.meeting-item .name{flex:1;font-weight:500;min-width:100px}
+.meeting-item .code{color:#6b7280;font-size:12px;font-family:monospace}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>📋 签到管理后台</h1>
 
-  <div class="card">
-    <h2>🔗 签到二维码</h2>
-    <input id="domain" placeholder="输入你的DDNS域名，如 checkin.example.com" style="margin-bottom:10px">
-    <button class="btn btn-orange" onclick="genQR()">生成签到二维码</button>
-    <div id="qrBox">
-      <div id="qrcode"></div>
-      <div id="link"></div>
-    </div>
+  <!-- 登录区 -->
+  <div class="card" id="loginCard">
+    <h2>管理员登录</h2>
+    <input id="username" type="text" placeholder="用户名" autocomplete="username">
+    <input id="pwd" type="password" placeholder="密码" autocomplete="current-password">
+    <button class="btn" style="width:100%" onclick="login()">登 录</button>
+    <div class="stat" id="loginMsg"></div>
   </div>
 
-  <div class="card">
-    <h2>📊 签到记录</h2>
-    <input id="pwd" type="password" placeholder="输入管理密码" style="margin-bottom:10px">
-    <div class="row">
-      <button class="btn" onclick="load()">查询记录</button>
-      <button class="btn btn-green" onclick="exportCsv()">导出 CSV</button>
+  <!-- 主功能区（登录后才显示） -->
+  <div id="mainArea" class="hidden">
+    <div class="card">
+      <h2>会议管理</h2>
+      <div class="row">
+        <input id="newMeetingName" placeholder="输入新会议名称" style="flex:1;margin-bottom:0;min-width:180px">
+        <button class="btn btn-orange" onclick="createMeeting()">创建会议</button>
+      </div>
+      <div id="meetingList" style="margin-top:12px"></div>
     </div>
-    <div class="stat" id="stat"></div>
-    <div style="overflow-x:auto;margin-top:10px">
-      <table id="tbl">
-        <thead><tr><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
-        <tbody></tbody>
-      </table>
+
+    <div class="card">
+      <h2>签到记录</h2>
+      <select id="meetingSelect" onchange="loadRecords()">
+        <option value="">请选择会议</option>
+      </select>
+      <div class="row">
+        <button class="btn btn-green btn-sm" onclick="exportCsv()">导出当前会议 CSV</button>
+        <button class="btn btn-sm" onclick="loadRecords()">刷新</button>
+      </div>
+      <div class="stat" id="stat"></div>
+      <div style="overflow-x:auto">
+        <table id="tbl">
+          <thead><tr><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:10px">
+      <button class="btn btn-red btn-sm" onclick="logout()">退出登录</button>
     </div>
   </div>
 </div>
 
 <script src="/qrcode.min.js"></script>
 <script>
-let pwd = '';
+let loggedIn = false;
+let currentMeetingId = '';
 
-function genQR(){
-  var domain = document.getElementById('domain').value.trim();
-  if(!domain){alert('请输入你的DDNS域名');return;}
-  var url = 'http://' + domain + '/';
-  document.getElementById('link').textContent = url;
-  document.getElementById('qrBox').style.display = 'block';
-  document.getElementById('qrcode').innerHTML = '';
+// 检查登录状态
+fetch('/api/check-login').then(r=>r.json()).then(j=>{
+  if (j.loggedIn) {
+    loggedIn = true;
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('mainArea').classList.remove('hidden');
+    loadMeetings();
+  }
+});
+
+function login(){
+  var username = document.getElementById('username').value.trim();
+  var pwd = document.getElementById('pwd').value;
+  if (!username || !pwd) { document.getElementById('loginMsg').textContent = '请输入用户名和密码'; return; }
+  document.getElementById('loginMsg').textContent = '登录中…';
+  fetch('/api/login', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({username, password: pwd})
+  }).then(r=>r.json()).then(j=>{
+    if (j.ok) {
+      loggedIn = true;
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('mainArea').classList.remove('hidden');
+      loadMeetings();
+    } else {
+      document.getElementById('loginMsg').textContent = j.msg || '登录失败';
+    }
+  }).catch(()=>{
+    document.getElementById('loginMsg').textContent = '网络异常';
+  });
+}
+
+function logout(){
+  fetch('/api/logout', {method:'POST'}).then(()=>{
+    loggedIn = false;
+    document.getElementById('loginCard').classList.remove('hidden');
+    document.getElementById('mainArea').classList.add('hidden');
+    document.getElementById('username').value = '';
+    document.getElementById('pwd').value = '';
+  });
+}
+
+function loadMeetings(){
+  fetch('/api/meetings').then(r=>r.json()).then(j=>{
+    if (!j.ok) return;
+    var list = document.getElementById('meetingList');
+    var select = document.getElementById('meetingSelect');
+    list.innerHTML = '';
+    select.innerHTML = '<option value="">请选择会议</option>';
+    j.data.forEach(m => {
+      var div = document.createElement('div');
+      div.className = 'meeting-item';
+      div.innerHTML = `
+        <span class="name">${m.name}</span>
+        <span class="code">${m.code}</span>
+        <button class="btn btn-sm btn-orange" onclick="showQR('${m.code}','${m.name.replace(/'/g,"\\'")}')">二维码</button>
+        <button class="btn btn-sm btn-red" onclick="delMeeting(${m.id})">删除</button>
+      `;
+      list.appendChild(div);
+
+      var opt = document.createElement('option');
+      opt.value = m.id;
+      opt.textContent = m.name;
+      select.appendChild(opt);
+    });
+  });
+}
+
+function createMeeting(){
+  var name = document.getElementById('newMeetingName').value.trim();
+  if (!name) { alert('请输入会议名称'); return; }
+  fetch('/api/meetings', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({name})
+  }).then(r=>r.json()).then(j=>{
+    if (j.ok) {
+      document.getElementById('newMeetingName').value = '';
+      loadMeetings();
+    } else {
+      alert(j.msg || '创建失败');
+    }
+  });
+}
+
+function delMeeting(id){
+  if (!confirm('确定删除该会议及其所有签到记录？')) return;
+  fetch('/api/meetings/' + id, {method:'DELETE'}).then(r=>r.json()).then(j=>{
+    if (j.ok) { loadMeetings(); loadRecords(); }
+    else alert(j.msg || '删除失败');
+  });
+}
+
+function loadRecords(){
+  var mid = document.getElementById('meetingSelect').value;
+  currentMeetingId = mid;
+  if (!mid) {
+    document.querySelector('#tbl tbody').innerHTML = '';
+    document.getElementById('stat').textContent = '';
+    return;
+  }
+  fetch('/api/records/' + mid).then(r=>r.json()).then(j=>{
+    if (!j.ok) { alert(j.msg || '加载失败'); return; }
+    var tb = document.querySelector('#tbl tbody');
+    tb.innerHTML = j.data.map(r =>
+      `<tr><td>${r.name}</td><td>${r.phone}</td><td>${r.org}</td><td>${r.time}</td></tr>`
+    ).join('');
+    document.getElementById('stat').textContent = '共 ' + j.total + ' 人签到';
+  });
+}
+
+function exportCsv(){
+  if (!currentMeetingId) { alert('请先选择会议'); return; }
+  window.open('/api/export/' + currentMeetingId);
+}
+
+function showQR(code, name){
+  var domain = prompt('请输入你的域名（含端口），例如 checkin.example.com:28474', location.host);
+  if (!domain) return;
+  var url = 'https://' + domain + '/?m=' + code;
+  var box = document.getElementById('qrBox');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'qrBox';
+    document.querySelector('.wrap').appendChild(box);
+  }
+  box.style.display = 'block';
+  box.innerHTML = '<h3 style="margin:0 0 8px">' + name + ' 签到二维码</h3><div id="qrcode"></div><div class="link">' + url + '</div>';
   new QRCode(document.getElementById('qrcode'), {
     text: url, width: 220, height: 220,
     colorDark: '#1f2937', colorLight: '#ffffff',
     correctLevel: QRCode.CorrectLevel.H
   });
+  box.scrollIntoView({behavior:'smooth'});
 }
-
-function load(){
-  pwd = document.getElementById('pwd').value;
-  fetch('/admin/records?pwd=' + encodeURIComponent(pwd))
-    .then(r=>r.json()).then(j=>{
-      if(!j.ok){alert(j.msg||'密码错误');return;}
-      const tb = document.querySelector('#tbl tbody');
-      tb.innerHTML = j.data.map(r =>
-        `<tr><td>${r.name}</td><td>${r.phone}</td><td>${r.org}</td><td>${r.time}</td></tr>`
-      ).join('');
-      document.getElementById('stat').textContent = '共 ' + j.total + ' 人签到';
-    });
-}
-
-function exportCsv(){
-  if(!pwd){alert('请先输入密码并查询');return;}
-  window.open('/admin/export?pwd=' + encodeURIComponent(pwd));
-}
-
-setInterval(()=>{ if(pwd) load(); }, 15000);
 </script>
 </body>
 </html>

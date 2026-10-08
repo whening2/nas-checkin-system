@@ -33,10 +33,10 @@ button:disabled{opacity:.6}
 </style>
 </head>
 <body>
-<div class="card">
-  <h1>会议签到</h1>
-  <p class="sub">请填写以下信息完成签到</p>
-  <form id="f" autocomplete="on">
+<div class="card" id="formCard">
+  <h1 id="meetingName">会议签到</h1>
+  <p class="sub" id="meetingSub">正在加载会议信息…</p>
+  <form id="f" autocomplete="on" style="display:none">
     <label for="name">姓名 <span style="color:#dc2626">*</span></label>
     <input id="name" type="text" required maxlength="50" placeholder="请输入姓名" autocomplete="name">
     <label for="phone">电话 <span style="color:#dc2626">*</span></label>
@@ -51,48 +51,84 @@ button:disabled{opacity:.6}
 </div>
 <script>
 (function(){
-  var f=document.getElementById('f'),btn=document.getElementById('btn'),msg=document.getElementById('msg');
-  var $=function(id){return document.getElementById(id);};
-  try{
-    var s=JSON.parse(localStorage.getItem('signin_profile')||'{}');
-    if(s.name)$('name').value=s.name;
-    if(s.phone)$('phone').value=s.phone;
-    if(s.org)$('org').value=s.org;
-  }catch(e){}
+  var params = new URLSearchParams(location.search);
+  var meetingCode = params.get('m');
+  var meetingId = null;
 
-  f.addEventListener('submit',function(e){
+  if (!meetingCode) {
+    document.getElementById('meetingName').textContent = '无效的会议链接';
+    document.getElementById('meetingSub').textContent = '请扫描正确的二维码';
+    return;
+  }
+
+  // 会议校验：询问服务器该会议是否存在
+  fetch('/api/meeting-info?code=' + encodeURIComponent(meetingCode))
+    .then(r => r.json())
+    .then(j => {
+      if (!j.ok) {
+        document.getElementById('meetingName').textContent = '会议不存在';
+        document.getElementById('meetingSub').textContent = j.msg || '请联系管理员';
+        return;
+      }
+      meetingId = j.id;
+      document.getElementById('meetingName').textContent = j.name;
+      document.getElementById('meetingSub').textContent = '请填写以下信息完成签到';
+      document.getElementById('f').style.display = 'block';
+    })
+    .catch(() => {
+      document.getElementById('meetingName').textContent = '网络异常';
+      document.getElementById('meetingSub').textContent = '请稍后重试';
+    });
+
+  var f = document.getElementById('f'), btn = document.getElementById('btn'), msg = document.getElementById('msg');
+  var $ = id => document.getElementById(id);
+
+  try {
+    var s = JSON.parse(localStorage.getItem('signin_profile') || '{}');
+    if (s.name) $('name').value = s.name;
+    if (s.phone) $('phone').value = s.phone;
+    if (s.org) $('org').value = s.org;
+  } catch(e) {}
+
+  f.addEventListener('submit', function(e){
     e.preventDefault();
-    var data={
-      name:$('name').value.trim(),
-      phone:$('phone').value.trim(),
-      org:$('org').value.trim(),
-      note:$('note').value.trim()
+    if (!meetingId) { msg.textContent = '会议信息未加载'; return; }
+    var data = {
+      meetingId: meetingId,
+      name: $('name').value.trim(),
+      phone: $('phone').value.trim(),
+      org: $('org').value.trim(),
+      note: $('note').value.trim()
     };
-    if(!data.name||!data.phone||!data.org){msg.textContent='请填写完整信息';return;}
-    btn.disabled=true;btn.textContent='提交中…';msg.textContent='';
+    if (!data.name || !data.phone || !data.org) { msg.textContent = '请填写完整信息'; return; }
+    btn.disabled = true; btn.textContent = '提交中…'; msg.textContent = '';
 
-    fetch('/api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
-      .then(function(r){return r.json();})
-      .then(function(j){
-        if(j.ok){
-          try{localStorage.setItem('signin_profile',JSON.stringify(data));}catch(e){}
-          var t=(j.time||'');
-          var d=document.createElement('div');
-          d.className='ok';
-          d.innerHTML='<div class="tick">✓</div><h2></h2><p></p><p style="font-size:13px;color:#9ca3af">可以关闭本页面了</p>';
-          d.querySelector('h2').textContent=j.dup?'您已签到过':'签到成功';
-          d.querySelector('p').textContent=data.name+'，'+(j.dup?('记录时间 '+t):t);
-          document.body.innerHTML='';
-          document.body.appendChild(d);
-        }else{
-          msg.textContent=j.msg||'提交失败，请重试';
-          btn.disabled=false;btn.textContent='提 交 签 到';
-        }
-      })
-      .catch(function(){
-        msg.textContent='网络异常，请重试';
-        btn.disabled=false;btn.textContent='提 交 签 到';
-      });
+    fetch('/api/checkin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(r => r.json())
+    .then(j => {
+      if (j.ok) {
+        try { localStorage.setItem('signin_profile', JSON.stringify(data)); } catch(e) {}
+        var t = j.time || '';
+        var d = document.createElement('div');
+        d.className = 'ok';
+        d.innerHTML = '<div class="tick">✓</div><h2></h2><p></p><p style="font-size:13px;color:#9ca3af">可以关闭本页面了</p>';
+        d.querySelector('h2').textContent = j.dup ? '您已签到过' : '签到成功';
+        d.querySelector('p').textContent = data.name + '，' + (j.dup ? ('记录时间 ' + t) : t);
+        document.body.innerHTML = '';
+        document.body.appendChild(d);
+      } else {
+        msg.textContent = j.msg || '提交失败，请重试';
+        btn.disabled = false; btn.textContent = '提 交 签 到';
+      }
+    })
+    .catch(() => {
+      msg.textContent = '网络异常，请重试';
+      btn.disabled = false; btn.textContent = '提 交 签 到';
+    });
   });
 })();
 </script>
