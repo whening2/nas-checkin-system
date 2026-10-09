@@ -4,21 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
+<link rel="manifest" href="/manifest.json">
 <title>签到管理后台</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f2f4f8;margin:0;padding:16px;color:#1f2937;font-size:15px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#eef2f7;margin:0;padding:16px;color:#1f2937;font-size:15px}
 .wrap{max-width:800px;margin:0 auto}
 h1{font-size:20px;margin:0 0 16px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .card h2{font-size:16px;margin:0 0 12px;color:#374151}
-input,select{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none;margin-bottom:10px}
+input,select{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none;margin-bottom:10px;background:#fff}
 input:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
 .btn{padding:13px 20px;font-size:16px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer}
 .btn:disabled{opacity:.6}
 .btn-green{background:#16a34a}
 .btn-orange{background:#ea580c}
 .btn-red{background:#dc2626}
+.btn-gray{background:#6b7280}
 .btn-sm{padding:8px 12px;font-size:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
 table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;margin-top:10px}
@@ -30,17 +32,29 @@ tr:last-child td{border-bottom:0}
 #qrBox canvas,#qrBox img{max-width:100%}
 .link{word-break:break-all;font-size:13px;color:#2563eb;margin-top:8px}
 .hidden{display:none}
-.meeting-item{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
+.meeting-item{display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
 .meeting-item:last-child{border-bottom:0}
-.meeting-item .name{flex:1;font-weight:500;min-width:100px}
-.meeting-item .code{color:#6b7280;font-size:12px;font-family:monospace}
+.meeting-item .name{flex:1;font-weight:600;min-width:120px}
+.meeting-item .meta{font-size:12px;color:#6b7280;width:100%;margin-top:2px}
+.meeting-item .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:6px}
+.badge-ok{background:#dcfce7;color:#166534}
+.badge-warn{background:#fef3c7;color:#92400e}
+.badge-exp{background:#fee2e2;color:#991b1b}
+.field-checks{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 12px}
+.field-checks label{display:flex;align-items:center;gap:4px;font-size:14px;color:#374151;cursor:pointer}
+.field-checks input{width:auto;margin:0}
+.order-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.order-row span{font-size:14px;color:#374151;min-width:60px}
+.order-row select{margin-bottom:0;flex:1}
+.qr-tip{background:#fff7ed;color:#c2410c;padding:8px 12px;border-radius:8px;
+        font-size:13px;font-weight:600;margin-bottom:12px;display:inline-block;
+        border:1px solid #fdba74}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>📋 签到管理后台</h1>
 
-  <!-- 登录区 -->
   <div class="card" id="loginCard">
     <h2>管理员登录</h2>
     <input id="username" type="text" placeholder="用户名" autocomplete="username">
@@ -49,15 +63,34 @@ tr:last-child td{border-bottom:0}
     <div class="stat" id="loginMsg"></div>
   </div>
 
-  <!-- 主功能区（登录后才显示） -->
   <div id="mainArea" class="hidden">
     <div class="card">
-      <h2>会议管理</h2>
-      <div class="row">
-        <input id="newMeetingName" placeholder="输入新会议名称" style="flex:1;margin-bottom:0;min-width:180px">
-        <button class="btn btn-orange" onclick="createMeeting()">创建会议</button>
+      <h2>创建会议</h2>
+      <input id="newMeetingName" placeholder="会议名称，如：2026年度总结大会">
+      <input id="newMeetingDate" placeholder="会议日期，如 2026年10月9日（留空默认今天）">
+
+      <div style="font-size:14px;color:#374151;margin-top:4px">选择签到字段：</div>
+      <div class="field-checks">
+        <label><input type="checkbox" id="f_name" checked onchange="refreshOrderOptions()"> 姓名</label>
+        <label><input type="checkbox" id="f_phone" checked onchange="refreshOrderOptions()"> 电话</label>
+        <label><input type="checkbox" id="f_org" checked onchange="refreshOrderOptions()"> 单位</label>
+        <label><input type="checkbox" id="f_title" onchange="refreshOrderOptions()"> 职务</label>
+        <label><input type="checkbox" id="f_note" onchange="refreshOrderOptions()"> 备注</label>
       </div>
-      <div id="meetingList" style="margin-top:12px"></div>
+
+      <div style="font-size:14px;color:#374151;margin:8px 0 6px">列顺序（从左到右，序号固定第 1 列）：</div>
+      <div class="order-row"><span>第 2 列：</span><select id="ord2" class="order-select"></select></div>
+      <div class="order-row"><span>第 3 列：</span><select id="ord3" class="order-select"></select></div>
+      <div class="order-row"><span>第 4 列：</span><select id="ord4" class="order-select"></select></div>
+      <div class="order-row"><span>第 5 列：</span><select id="ord5" class="order-select"></select></div>
+      <div class="order-row"><span>第 6 列：</span><select id="ord6" class="order-select"></select></div>
+
+      <button class="btn btn-orange" style="margin-top:10px" onclick="createMeeting()">创建会议</button>
+    </div>
+
+    <div class="card">
+      <h2>会议列表</h2>
+      <div id="meetingList"></div>
     </div>
 
     <div class="card">
@@ -66,13 +99,13 @@ tr:last-child td{border-bottom:0}
         <option value="">请选择会议</option>
       </select>
       <div class="row">
-        <button class="btn btn-green btn-sm" onclick="exportCsv()">导出当前会议 CSV</button>
-        <button class="btn btn-sm" onclick="loadRecords()">刷新</button>
+        <button class="btn btn-green btn-sm" onclick="exportExcel()">导出 Excel</button>
+        <button class="btn btn-gray btn-sm" onclick="loadRecords()">刷新</button>
       </div>
       <div class="stat" id="stat"></div>
       <div style="overflow-x:auto">
         <table id="tbl">
-          <thead><tr><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
+          <thead><tr id="tblHead"><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -82,14 +115,45 @@ tr:last-child td{border-bottom:0}
       <button class="btn btn-red btn-sm" onclick="logout()">退出登录</button>
     </div>
   </div>
+
+  <div id="qrBox"></div>
 </div>
 
 <script src="/qrcode.min.js"></script>
 <script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+
 let loggedIn = false;
 let currentMeetingId = '';
+let currentFields = {};
 
-// 检查登录状态
+const FIELD_LABELS = { org: '单位', name: '姓名', title: '职务', phone: '电话', note: '备注' };
+
+function refreshOrderOptions() {
+  const checked = ['org','name','title','phone','note'].filter(k => {
+    const el = document.getElementById('f_' + k);
+    return el && el.checked;
+  });
+  const defaultOrder = ['org','name','title','phone','note'].filter(k => checked.includes(k));
+
+  const selects = ['ord2','ord3','ord4','ord5','ord6'].map(id => document.getElementById(id));
+  selects.forEach((sel, idx) => {
+    const prevValue = sel.value;
+    sel.innerHTML = '<option value="">（不显示）</option>';
+    checked.forEach(k => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = FIELD_LABELS[k];
+      sel.appendChild(opt);
+    });
+    if (prevValue && checked.includes(prevValue)) {
+      sel.value = prevValue;
+    } else {
+      sel.value = defaultOrder[idx] || '';
+    }
+  });
+}
+
 fetch('/api/check-login').then(r=>r.json()).then(j=>{
   if (j.loggedIn) {
     loggedIn = true;
@@ -98,6 +162,8 @@ fetch('/api/check-login').then(r=>r.json()).then(j=>{
     loadMeetings();
   }
 });
+
+refreshOrderOptions();
 
 function login(){
   var username = document.getElementById('username').value.trim();
@@ -117,9 +183,7 @@ function login(){
     } else {
       document.getElementById('loginMsg').textContent = j.msg || '登录失败';
     }
-  }).catch(()=>{
-    document.getElementById('loginMsg').textContent = '网络异常';
-  });
+  }).catch(()=>{ document.getElementById('loginMsg').textContent = '网络异常'; });
 }
 
 function logout(){
@@ -127,8 +191,6 @@ function logout(){
     loggedIn = false;
     document.getElementById('loginCard').classList.remove('hidden');
     document.getElementById('mainArea').classList.add('hidden');
-    document.getElementById('username').value = '';
-    document.getElementById('pwd').value = '';
   });
 }
 
@@ -140,13 +202,19 @@ function loadMeetings(){
     list.innerHTML = '';
     select.innerHTML = '<option value="">请选择会议</option>';
     j.data.forEach(m => {
+      var badge = '';
+      if (m.expired) badge = '<span class="badge badge-exp">已过期</span>';
+      else if (m.leftDays <= 2) badge = '<span class="badge badge-warn">剩余 ' + m.leftDays + ' 天</span>';
+      else badge = '<span class="badge badge-ok">剩余 ' + m.leftDays + ' 天</span>';
+
       var div = document.createElement('div');
       div.className = 'meeting-item';
       div.innerHTML = `
-        <span class="name">${m.name}</span>
-        <span class="code">${m.code}</span>
+        <span class="name">${m.name} ${badge}</span>
         <button class="btn btn-sm btn-orange" onclick="showQR('${m.code}','${m.name.replace(/'/g,"\\'")}')">二维码</button>
-        <button class="btn btn-sm btn-red" onclick="delMeeting(${m.id})">删除</button>
+        <button class="btn btn-sm btn-gray" onclick="extendMeeting(${m.id})">延期7天</button>
+        <button class="btn btn-sm btn-red" onclick="delMeeting(${m.id},'${m.name.replace(/'/g,"\\'")}',${m.count})">删除</button>
+        <div class="meta">日期：${m.meeting_date || '未设置'} · 编码：${m.code} · 已签到 ${m.count} 人</div>
       `;
       list.appendChild(div);
 
@@ -161,13 +229,28 @@ function loadMeetings(){
 function createMeeting(){
   var name = document.getElementById('newMeetingName').value.trim();
   if (!name) { alert('请输入会议名称'); return; }
+  var date = document.getElementById('newMeetingDate').value.trim();
+  var fields = {
+    name: document.getElementById('f_name').checked,
+    phone: document.getElementById('f_phone').checked,
+    org: document.getElementById('f_org').checked,
+    title: document.getElementById('f_title').checked,
+    note: document.getElementById('f_note').checked
+  };
+  const columnOrder = ['ord2','ord3','ord4','ord5','ord6']
+    .map(id => document.getElementById(id).value)
+    .filter(v => v);
+  const uniqueOrder = [];
+  columnOrder.forEach(k => { if (!uniqueOrder.includes(k)) uniqueOrder.push(k); });
+
   fetch('/api/meetings', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({name})
+    body: JSON.stringify({name, meetingDate: date, fields, columnOrder: uniqueOrder})
   }).then(r=>r.json()).then(j=>{
     if (j.ok) {
       document.getElementById('newMeetingName').value = '';
+      document.getElementById('newMeetingDate').value = '';
       loadMeetings();
     } else {
       alert(j.msg || '创建失败');
@@ -175,8 +258,15 @@ function createMeeting(){
   });
 }
 
-function delMeeting(id){
-  if (!confirm('确定删除该会议及其所有签到记录？')) return;
+function extendMeeting(id){
+  fetch('/api/meetings/' + id + '/extend', {method:'POST'}).then(r=>r.json()).then(j=>{
+    if (j.ok) loadMeetings();
+    else alert(j.msg || '延期失败');
+  });
+}
+
+function delMeeting(id, name, count){
+  if (!confirm(`确定删除会议「${name}」？\n该会议已有 ${count} 条签到记录，删除后不可恢复。`)) return;
   fetch('/api/meetings/' + id, {method:'DELETE'}).then(r=>r.json()).then(j=>{
     if (j.ok) { loadMeetings(); loadRecords(); }
     else alert(j.msg || '删除失败');
@@ -193,15 +283,38 @@ function loadRecords(){
   }
   fetch('/api/records/' + mid).then(r=>r.json()).then(j=>{
     if (!j.ok) { alert(j.msg || '加载失败'); return; }
+    currentFields = j.fields ? JSON.parse(j.fields) : {};
+    const orderArr = (j.columnOrder || '').split(',').map(s => s.trim()).filter(s => s);
+
+    var headHtml = '';
+    orderArr.forEach(key => {
+      if (currentFields[key]) headHtml += '<th>' + FIELD_LABELS[key] + '</th>';
+    });
+    ['org','name','title','phone','note'].forEach(key => {
+      if (currentFields[key] && !orderArr.includes(key)) {
+        headHtml += '<th>' + FIELD_LABELS[key] + '</th>';
+      }
+    });
+    headHtml += '<th>时间</th>';
+    document.getElementById('tblHead').innerHTML = headHtml;
+
     var tb = document.querySelector('#tbl tbody');
-    tb.innerHTML = j.data.map(r =>
-      `<tr><td>${r.name}</td><td>${r.phone}</td><td>${r.org}</td><td>${r.time}</td></tr>`
-    ).join('');
+    tb.innerHTML = j.data.map(r => {
+      var row = '';
+      orderArr.forEach(key => {
+        if (currentFields[key]) row += `<td>${r[key]||''}</td>`;
+      });
+      ['org','name','title','phone','note'].forEach(key => {
+        if (currentFields[key] && !orderArr.includes(key)) row += `<td>${r[key]||''}</td>`;
+      });
+      row += `<td>${r.time}</td>`;
+      return '<tr>' + row + '</tr>';
+    }).join('');
     document.getElementById('stat').textContent = '共 ' + j.total + ' 人签到';
   });
 }
 
-function exportCsv(){
+function exportExcel(){
   if (!currentMeetingId) { alert('请先选择会议'); return; }
   window.open('/api/export/' + currentMeetingId);
 }
@@ -211,13 +324,13 @@ function showQR(code, name){
   if (!domain) return;
   var url = 'https://' + domain + '/?m=' + code;
   var box = document.getElementById('qrBox');
-  if (!box) {
-    box = document.createElement('div');
-    box.id = 'qrBox';
-    document.querySelector('.wrap').appendChild(box);
-  }
   box.style.display = 'block';
-  box.innerHTML = '<h3 style="margin:0 0 8px">' + name + ' 签到二维码</h3><div id="qrcode"></div><div class="link">' + url + '</div>';
+  box.innerHTML = `
+    <h3 style="margin:0 0 8px">${name} 签到二维码</h3>
+    <div class="qr-tip">📶 请用手机流量扫码，部分 WiFi 可能无法完成签到</div>
+    <div id="qrcode"></div>
+    <div class="link">${url}</div>
+  `;
   new QRCode(document.getElementById('qrcode'), {
     text: url, width: 220, height: 220,
     colorDark: '#1f2937', colorLight: '#ffffff',

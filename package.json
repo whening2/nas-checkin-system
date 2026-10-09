@@ -1,6 +1,6 @@
 {
   "name": "checkin-server",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
   "dependencies": {
@@ -8,6 +8,7 @@
     "better-sqlite3": "^11.0.0",
     "helmet": "^7.1.0",
     "express-rate-limit": "^7.1.5",
-    "express-session": "^1.18.0"
+    "express-session": "^1.18.0",
+    "exceljs": "^4.4.0"
   }
 }
