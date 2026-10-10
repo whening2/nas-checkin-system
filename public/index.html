@@ -5,55 +5,47 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
 <link rel="icon" href="data:,">
-<link rel="manifest" href="/manifest.json">
 <title>会议签到</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-     background:#eef2f7;color:#1f2937;font-size:16px;line-height:1.5;
-     padding:16px;min-height:100vh}
-.card{max-width:460px;margin:0 auto;background:#fff;border-radius:14px;
-      box-shadow:0 2px 12px rgba(0,0,0,.06);padding:22px 20px 24px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#eef2f7;color:#1f2937;font-size:16px;line-height:1.5;padding:16px;min-height:100vh;margin:0}
+.card{max-width:520px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.06);padding:22px 20px 24px}
 h1{font-size:20px;margin:0 0 4px}
 .sub{color:#6b7280;font-size:14px;margin:0 0 18px}
-.tips{display:flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fdba74;
-      border-left:4px solid #ea580c;color:#9a3412;padding:12px 14px;border-radius:10px;
-      font-size:14px;line-height:1.5;margin:0 0 18px}
+.tips{display:flex;align-items:center;gap:8px;background:#fff7ed;border:1px solid #fdba74;border-left:4px solid #ea580c;color:#9a3412;padding:12px 14px;border-radius:10px;font-size:14px;margin:0 0 18px}
 .tips-icon{font-size:18px;animation:pulse 1.8s ease-in-out infinite}
-.tips strong{color:#c2410c}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(1.15)}}
 label{display:block;font-size:14px;color:#374151;margin:14px 0 6px;font-weight:500}
-input{width:100%;padding:12px 14px;font-size:16px;border:1px solid #d1d5db;
-      border-radius:10px;outline:none;background:#fff;transition:border-color .15s}
-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-button{width:100%;margin-top:22px;padding:14px;font-size:17px;font-weight:600;
-       color:#fff;background:#2563eb;border:0;border-radius:10px;cursor:pointer}
+input,select{width:100%;padding:12px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:10px;outline:none;background:#fff}
+input:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+button{width:100%;margin-top:22px;padding:14px;font-size:17px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:10px;cursor:pointer}
 button:disabled{opacity:.6}
+.captcha-row{display:flex;gap:8px;align-items:center}
+.captcha-row span{font-size:18px;font-weight:600;color:#2563eb;min-width:90px}
+.captcha-row button{width:auto;margin-top:0;padding:8px 12px;font-size:14px;background:#6b7280}
+#signatureCanvas{width:100%;height:180px;border:1px dashed #9ca3af;border-radius:10px;background:#fafafa;touch-action:none;display:block}
+.sig-hint{font-size:12px;color:#6b7280;margin-top:4px;text-align:center}
+.sig-actions{display:flex;gap:8px;margin-top:6px}
+.sig-actions button{margin-top:0;padding:8px;font-size:14px;background:#6b7280}
 .msg{margin-top:14px;font-size:14px;color:#dc2626;min-height:20px;text-align:center}
-.ok{max-width:460px;margin:10vh auto;background:#fff;border-radius:14px;
-    padding:40px 24px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06)}
-.ok .tick{width:64px;height:64px;margin:0 auto 16px;border-radius:50%;
-          background:#dcfce7;color:#16a34a;font-size:36px;line-height:64px}
+.ok{max-width:460px;margin:10vh auto;background:#fff;border-radius:14px;padding:40px 24px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.ok .tick{width:64px;height:64px;margin:0 auto 16px;border-radius:50%;background:#dcfce7;color:#16a34a;font-size:36px;line-height:64px}
 .ok h2{margin:0 0 8px;font-size:20px}
 .ok p{color:#6b7280;margin:6px 0;font-size:15px}
-.footer{text-align:center;font-size:12px;color:#9ca3af;margin-top:24px;line-height:1.6}
+.footer{text-align:center;font-size:12px;color:#9ca3af;margin-top:24px}
 </style>
 </head>
 <body>
 <div class="card" id="formCard">
   <h1 id="meetingName">会议签到</h1>
   <p class="sub" id="meetingSub">正在加载会议信息…</p>
-  <div class="tips">
-    <span class="tips-icon">📶</span>
-    <span>请使用<strong>移动网络</strong>进行签到，部分 WiFi 无法访问</span>
-  </div>
+  <div class="tips"><span class="tips-icon">📶</span><span>请使用<strong>移动网络</strong>进行签到，部分 WiFi 无法访问</span></div>
   <form id="f" autocomplete="on" style="display:none">
     <div id="dynamicFields"></div>
-    <label for="captcha">验证码 <span style="color:#dc2626">*</span></label>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span id="captchaQ" style="font-size:18px;font-weight:600;color:#2563eb;min-width:90px">加载中…</span>
-      <button type="button" onclick="loadCaptcha()" style="width:auto;margin-top:0;padding:6px 12px;font-size:14px;background:#6b7280">换一题</button>
+    <label>验证码 <span style="color:#dc2626">*</span></label>
+    <div class="captcha-row">
+      <span id="captchaQ">加载中…</span>
+      <button type="button" onclick="loadCaptcha()">换一题</button>
     </div>
     <input id="captcha" type="number" required inputmode="numeric" placeholder="请输入计算结果" style="margin-top:8px">
     <button type="submit" id="btn">提 交 签 到</button>
@@ -63,7 +55,9 @@ button:disabled{opacity:.6}
 </div>
 
 <script>
-// 把 loadCaptcha 挂到全局，让 onclick 按钮能找到
+let meetingFields = {}, customFields = [], requiredSet = new Set();
+let customIdMap = {};
+
 window.loadCaptcha = function() {
   document.getElementById('captchaQ').textContent = '加载中…';
   document.getElementById('captcha').value = '';
@@ -72,79 +66,202 @@ window.loadCaptcha = function() {
   }).catch(() => document.getElementById('captchaQ').textContent = '加载失败');
 };
 
-(function(){
-  var params = new URLSearchParams(location.search);
-  var meetingCode = params.get('m');
-  var meetingId = null;
-  var meetingFields = {};
+let sigCtx = null, sigDrawing = false, sigCanvas = null, sigEmpty = true;
+function initSignature() {
+  sigCanvas = document.getElementById('signatureCanvas');
+  if (!sigCanvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * dpr;
+  sigCanvas.height = rect.height * dpr;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(dpr, dpr);
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.strokeStyle = '#111827';
+  const getPos = (e) => {
+    const r = sigCanvas.getBoundingClientRect();
+    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const start = (e) => { e.preventDefault(); sigDrawing = true; sigEmpty = false; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); };
+  const move = (e) => { if (!sigDrawing) return; e.preventDefault(); const p = getPos(e); sigCtx.lineTo(p.x, p.y); sigCtx.stroke(); };
+  const end = () => { sigDrawing = false; };
+  sigCanvas.addEventListener('mousedown', start);
+  sigCanvas.addEventListener('mousemove', move);
+  sigCanvas.addEventListener('mouseup', end);
+  sigCanvas.addEventListener('mouseleave', end);
+  sigCanvas.addEventListener('touchstart', start, {passive:false});
+  sigCanvas.addEventListener('touchmove', move, {passive:false});
+  sigCanvas.addEventListener('touchend', end);
+}
+window.clearSignature = function() {
+  if (!sigCanvas) return;
+  sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+  sigEmpty = true;
+};
+window.getSignature = function() {
+  if (!sigCanvas || sigEmpty) return '';
+  return sigCanvas.toDataURL('image/png');
+};
 
-  // 无会议参数：显示站点标题和副标题
+(function(){
+  const params = new URLSearchParams(location.search);
+  const meetingCode = params.get('m');
+  let meetingId = null;
+
   if (!meetingCode) {
-    fetch('/api/config').then(r => r.json()).then(cfg => {
-      document.getElementById('meetingName').textContent = cfg.siteTitle || '会议签到';
-      document.getElementById('meetingSub').textContent = cfg.subtitle || '请扫描正确的二维码';
-    });
+    document.getElementById('meetingName').textContent = '会议签到';
+    document.getElementById('meetingSub').textContent = '请扫描正确的二维码';
     return;
   }
 
   fetch('/api/meeting-info?code=' + encodeURIComponent(meetingCode))
-    .then(r => r.json())
-    .then(j => {
+    .then(r => r.json()).then(j => {
       if (!j.ok) {
         document.getElementById('meetingName').textContent = '无法签到';
         document.getElementById('meetingSub').textContent = j.msg || '请联系管理员';
         return;
       }
       meetingId = j.id;
-      meetingFields = j.fields || { name: true, phone: true, org: true, title: false, note: false };
+      meetingFields = j.fields || {};
+      customFields = j.customFields || [];
+      requiredSet = new Set(j.requiredFields || []);
       document.getElementById('meetingName').textContent = j.name;
       document.getElementById('meetingSub').textContent = '请填写以下信息完成签到';
 
-      var html = '';
-      if (meetingFields.name)  html += '<label>姓名 <span style="color:#dc2626">*</span></label><input id="name" type="text" required maxlength="50" placeholder="请输入姓名" autocomplete="name">';
-      if (meetingFields.phone) html += '<label>电话 <span style="color:#dc2626">*</span></label><input id="phone" type="tel" required maxlength="11" placeholder="请输入手机号" autocomplete="tel" inputmode="tel">';
-      if (meetingFields.org)   html += '<label>单位 <span style="color:#dc2626">*</span></label><input id="org" type="text" required maxlength="100" placeholder="请输入单位 / 部门" autocomplete="organization">';
-      if (meetingFields.title) html += '<label>职务 <span style="color:#dc2626">*</span></label><input id="title" type="text" required maxlength="50" placeholder="请输入职务">';
-      if (meetingFields.note)  html += '<label>备注</label><input id="note" type="text" maxlength="200" placeholder="选填">';
-      document.getElementById('dynamicFields').innerHTML = html;
+      const fieldDefs = {
+        name:        { label:'姓名', type:'text' },
+        gender:      { label:'性别', type:'select', options:['男','女'] },
+        phone:       { label:'电话', type:'tel', maxlength:11, inputmode:'tel' },
+        id_card:     { label:'身份证号', type:'text', maxlength:18 },
+        org:         { label:'单位', type:'text' },
+        department:  { label:'部门', type:'text' },
+        class_name:  { label:'班级', type:'text' },
+        title:       { label:'职务', type:'text' },
+        identity:    { label:'身份', type:'text' },
+        employee_no: { label:'工号', type:'text' },
+        student_no:  { label:'学号', type:'text' },
+        reg_no:      { label:'报名号', type:'text' },
+        invite_code: { label:'邀请码', type:'text' },
+        note:        { label:'备注', type:'text', maxlength:200 }
+      };
 
+      let rawOrder = meetingFields._order;
+      if (!Array.isArray(rawOrder) || rawOrder.length === 0) {
+        rawOrder = Object.keys(meetingFields).filter(k => k !== '_order' && meetingFields[k]).map(k => 'field:' + k);
+      }
+
+      let html = '';
+      let customIdx = 0;
+      customIdMap = {};
+      rawOrder.forEach(item => {
+        let type, key, label;
+        if (typeof item === 'string' && item.startsWith('field:')) { type = 'field'; key = item.substring(6); }
+        else if (typeof item === 'string' && item.startsWith('custom:')) { type = 'custom'; label = item.substring(7); }
+        else {
+          if (fieldDefs[item]) { type = 'field'; key = item; }
+          else { type = 'custom'; label = item; }
+        }
+
+        if (type === 'field') {
+          if (key === 'signature') return;
+          if (!meetingFields[key]) return;
+          const def = fieldDefs[key];
+          if (!def) return;
+          const req = requiredSet.has('field:' + key);
+          const star = req ? ' <span style="color:#dc2626">*</span>' : '';
+          if (def.type === 'select') {
+            html += `<label>${def.label}${star}</label>
+              <select id="${key}" ${req ? 'required' : ''}><option value="">请选择</option>${def.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
+          } else {
+            const reqAttr = req ? 'required' : '';
+            const mm = def.maxlength ? `maxlength="${def.maxlength}"` : '';
+            const im = def.inputmode ? `inputmode="${def.inputmode}"` : '';
+            html += `<label>${def.label}${star}</label><input id="${key}" type="${def.type}" ${reqAttr} ${mm} ${im} placeholder="请输入${def.label}">`;
+          }
+        } else {
+          const id = 'custom_' + customIdx;
+          customIdMap[label] = id;
+          const req = requiredSet.has('custom:' + label);
+          const star = req ? ' <span style="color:#dc2626">*</span>' : '';
+          html += `<label>${label}${star}</label><input id="${id}" type="text" maxlength="200" ${req ? 'required' : ''} placeholder="请输入${label}">`;
+          customIdx++;
+        }
+      });
+
+      if (meetingFields.signature) {
+        const sigReq = requiredSet.has('field:signature');
+        const star = sigReq ? ' <span style="color:#dc2626">*</span>' : '';
+        html += `<label>手写签名${star}</label>
+          <canvas id="signatureCanvas"></canvas>
+          <div class="sig-hint">请在框内手写签名</div>
+          <div class="sig-actions"><button type="button" onclick="clearSignature()">清除重写</button></div>`;
+      }
+
+      document.getElementById('dynamicFields').innerHTML = html;
       document.getElementById('f').style.display = 'block';
       window.loadCaptcha();
+      if (meetingFields.signature) initSignature();
 
       try {
-        var s = JSON.parse(localStorage.getItem('signin_profile') || '{}');
-        ['name','phone','org','title'].forEach(function(k){
-          var el = document.getElementById(k);
-          if (el && s[k]) el.value = s[k];
-        });
+        const s = JSON.parse(localStorage.getItem('signin_profile') || '{}');
+        Object.keys(s).forEach(k => { const el = document.getElementById(k); if (el) el.value = s[k]; });
       } catch(e) {}
 
       document.getElementById('f').addEventListener('submit', function(e){
         e.preventDefault();
         if (!meetingId) { document.getElementById('msg').textContent = '会议信息未加载'; return; }
-        var data = { meetingId: meetingId, captcha: document.getElementById('captcha').value.trim() };
-        ['name','phone','org','title','note'].forEach(function(k){
-          var el = document.getElementById(k);
-          if (el) data[k] = el.value.trim();
+        const data = { meetingId, captcha: document.getElementById('captcha').value.trim() };
+        const textFields = ['name','gender','phone','id_card','org','department','class_name',
+          'title','identity','employee_no','student_no','reg_no','invite_code','note'];
+        textFields.forEach(k => { const el = document.getElementById(k); if (el) data[k] = el.value.trim(); });
+        data.custom_values = {};
+        Object.keys(customIdMap).forEach(label => {
+          const el = document.getElementById(customIdMap[label]);
+          if (el) data.custom_values[label] = el.value.trim();
         });
-        if (meetingFields.name && !data.name) { document.getElementById('msg').textContent = '请填写姓名'; return; }
-        if (meetingFields.phone && !/^1\d{10}$/.test(data.phone)) { document.getElementById('msg').textContent = '手机号格式错误'; return; }
-        if (meetingFields.org && !data.org) { document.getElementById('msg').textContent = '请填写单位'; return; }
-        if (meetingFields.title && !data.title) { document.getElementById('msg').textContent = '请填写职务'; return; }
+        // 必填校验（前端）
+        for (const item of requiredSet) {
+          if (item.startsWith('field:')) {
+            const k = item.substring(6);
+            if (k === 'signature') continue;
+            if (meetingFields[k] && !data[k]) {
+              document.getElementById('msg').textContent = '请填写' + (fieldDefs[k] ? fieldDefs[k].label : k);
+              return;
+            }
+          } else if (item.startsWith('custom:')) {
+            const label = item.substring(7);
+            if (!data.custom_values[label]) {
+              document.getElementById('msg').textContent = '请填写' + label;
+              return;
+            }
+          }
+        }
+        if (meetingFields.signature && requiredSet.has('field:signature')) {
+          const sig = window.getSignature();
+          if (!sig) { document.getElementById('msg').textContent = '请手写签名'; return; }
+          data.signature = sig;
+        } else if (meetingFields.signature) {
+          const sig = window.getSignature();
+          if (sig) data.signature = sig;
+        }
+        if (data.phone && !/^1\d{10}$/.test(data.phone)) {
+          document.getElementById('msg').textContent = '手机号格式错误'; return;
+        }
+        if (data.id_card && !/^\d{15}(\d{2}[\dXx])?$/.test(data.id_card)) {
+          document.getElementById('msg').textContent = '身份证号格式错误'; return;
+        }
 
-        var btn = document.getElementById('btn'), msg = document.getElementById('msg');
+        const btn = document.getElementById('btn'), msg = document.getElementById('msg');
         btn.disabled = true; btn.textContent = '提交中…'; msg.textContent = '';
-
         fetch('/api/checkin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        })
-        .then(r => r.json())
-        .then(j => {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+        }).then(r => r.json()).then(j => {
           if (j.ok) {
-            try { localStorage.setItem('signin_profile', JSON.stringify(data)); } catch(e) {}
-            var d = document.createElement('div');
+            const save = {}; textFields.forEach(k => { if (data[k]) save[k] = data[k]; });
+            try { localStorage.setItem('signin_profile', JSON.stringify(save)); } catch(e) {}
+            const d = document.createElement('div');
             d.className = 'ok';
             d.innerHTML = '<div class="tick">✓</div><h2></h2><p></p><p style="font-size:13px;color:#9ca3af">可以关闭本页面了</p>';
             d.querySelector('h2').textContent = j.dup ? '您已签到过' : '签到成功';
@@ -156,8 +273,7 @@ window.loadCaptcha = function() {
             btn.disabled = false; btn.textContent = '提 交 签 到';
             window.loadCaptcha();
           }
-        })
-        .catch(() => {
+        }).catch(() => {
           msg.textContent = '网络异常，请重试';
           btn.disabled = false; btn.textContent = '提 交 签 到';
           window.loadCaptcha();

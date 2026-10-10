@@ -3,52 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2563eb">
-<link rel="manifest" href="/manifest.json">
 <title>签到管理后台</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#eef2f7;margin:0;padding:16px;color:#1f2937;font-size:15px}
-.wrap{max-width:800px;margin:0 auto}
+.wrap{max-width:840px;margin:0 auto}
 h1{font-size:20px;margin:0 0 16px}
 .card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
 .card h2{font-size:16px;margin:0 0 12px;color:#374151}
-input,select{width:100%;padding:11px 14px;font-size:16px;border:1px solid #d1d5db;border-radius:8px;outline:none;margin-bottom:10px;background:#fff}
+input,select{width:100%;padding:10px 12px;font-size:15px;border:1px solid #d1d5db;border-radius:8px;outline:none;margin-bottom:8px;background:#fff}
 input:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-.btn{padding:13px 20px;font-size:16px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer}
-.btn:disabled{opacity:.6}
-.btn-green{background:#16a34a}
-.btn-orange{background:#ea580c}
-.btn-red{background:#dc2626}
-.btn-gray{background:#6b7280}
-.btn-sm{padding:8px 12px;font-size:14px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.btn{padding:11px 18px;font-size:15px;font-weight:600;color:#fff;background:#2563eb;border:0;border-radius:8px;cursor:pointer}
+.btn-green{background:#16a34a}.btn-orange{background:#ea580c}.btn-red{background:#dc2626}.btn-gray{background:#6b7280}
+.btn-sm{padding:6px 10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px}
 table{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;margin-top:10px}
-th,td{padding:9px 10px;text-align:left;font-size:13px;border-bottom:1px solid #e5e7eb}
+th,td{padding:8px 10px;text-align:left;font-size:13px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
 th{background:#f9fafb;font-weight:600;color:#374151}
-tr:last-child td{border-bottom:0}
-.stat{color:#6b7280;font-size:14px;margin:8px 0 0}
+.stat{color:#6b7280;font-size:14px;margin:6px 0 0}
+.hidden{display:none}
 #qrBox{text-align:center;padding:16px;display:none;margin-top:10px;border-top:1px solid #e5e7eb}
 #qrBox canvas,#qrBox img{max-width:100%}
 .link{word-break:break-all;font-size:13px;color:#2563eb;margin-top:8px}
-.hidden{display:none}
-.meeting-item{display:flex;align-items:center;gap:8px;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap}
-.meeting-item:last-child{border-bottom:0}
+.meeting-item{display:flex;gap:8px;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap;align-items:center}
 .meeting-item .name{flex:1;font-weight:600;min-width:120px}
 .meeting-item .meta{font-size:12px;color:#6b7280;width:100%;margin-top:2px}
-.meeting-item .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:6px}
-.badge-ok{background:#dcfce7;color:#166534}
-.badge-warn{background:#fef3c7;color:#92400e}
-.badge-exp{background:#fee2e2;color:#991b1b}
-.field-checks{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 12px}
-.field-checks label{display:flex;align-items:center;gap:4px;font-size:14px;color:#374151;cursor:pointer}
-.field-checks input{width:auto;margin:0}
-.order-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.order-row span{font-size:14px;color:#374151;min-width:60px}
-.order-row select{margin-bottom:0;flex:1}
-.qr-tip{background:#fff7ed;color:#c2410c;padding:8px 12px;border-radius:8px;
-        font-size:13px;font-weight:600;margin-bottom:12px;display:inline-block;
-        border:1px solid #fdba74}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:6px}
+.badge-ok{background:#dcfce7;color:#166534}.badge-warn{background:#fef3c7;color:#92400e}.badge-exp{background:#fee2e2;color:#991b1b}
+.badge-admin{background:#dbeafe;color:#1e40af}.badge-user{background:#f3f4f6;color:#4b5563}
+.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin:8px 0 12px}
+.field-grid label{display:flex;align-items:center;gap:4px;font-size:13px;color:#374151;cursor:pointer;padding:4px 6px;border-radius:6px}
+.field-grid label:hover{background:#f3f4f6}
+.field-grid input{width:auto;margin:0}
+.qr-tip{background:#fff7ed;color:#c2410c;padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;margin-bottom:12px;display:inline-block;border:1px solid #fdba74}
+.topbar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.order-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.order-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#f9fafb;border-radius:6px;font-size:14px;flex-wrap:wrap}
+.order-item .lbl{flex:1;min-width:120px}
+.order-item .tag{font-size:11px;color:#6b7280;background:#e5e7eb;padding:1px 6px;border-radius:8px}
+.order-item .tag-custom{background:#fde68a;color:#92400e}
+.order-item .req-label{display:flex;align-items:center;gap:4px;font-size:13px;color:#374151;cursor:pointer;user-select:none}
+.order-item .req-label input{width:auto;margin:0}
+.order-item button{padding:2px 8px;font-size:12px;background:#6b7280}
+.order-item button.danger{background:#dc2626}
+.notice{background:#eff6ff;border-left:4px solid #2563eb;color:#1e40af;padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:12px}
+.notice-warn{background:#fff7ed;border-left:4px solid #ea580c;color:#9a3412}
 </style>
 </head>
 <body>
@@ -56,63 +55,115 @@ tr:last-child td{border-bottom:0}
   <h1>📋 签到管理后台</h1>
 
   <div class="card" id="loginCard">
-    <h2>管理员登录</h2>
+    <h2>登录</h2>
     <input id="username" type="text" placeholder="用户名" autocomplete="username">
     <input id="pwd" type="password" placeholder="密码" autocomplete="current-password">
     <button class="btn" style="width:100%" onclick="login()">登 录</button>
     <div class="stat" id="loginMsg"></div>
+    <div class="stat" style="margin-top:10px;color:#9ca3af;font-size:12px">初始账号：admin / password（首次登录强制修改）</div>
+  </div>
+
+  <div id="recoveryArea" class="hidden">
+    <div class="notice notice-warn">🔐 恢复模式：只能重置管理员密码或删除管理员，无法查看签到数据。</div>
+    <div class="card">
+      <h2>管理员列表</h2>
+      <div id="recoveryAdminList"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:10px">
+        <button class="btn btn-red btn-sm" onclick="logout()">退出恢复模式</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mustChangeArea" class="hidden">
+    <div class="card">
+      <div class="notice notice-warn">⚠️ 首次登录请修改用户名和密码，修改完成后旧的 admin 账号将被删除。</div>
+      <h2>修改我的账号</h2>
+      <input id="mcNewUsername" placeholder="新用户名（3-20 位字母/数字/下划线）">
+      <input id="mcNewPassword" type="password" placeholder="新密码（≥9 位，含大小写字母、数字、符号）">
+      <input id="mcNewPassword2" type="password" placeholder="确认新密码">
+      <button class="btn" onclick="submitMustChange()">确认修改</button>
+      <div class="stat" id="mcMsg"></div>
+    </div>
   </div>
 
   <div id="mainArea" class="hidden">
-    <div class="card">
-      <h2>创建会议</h2>
-      <input id="newMeetingName" placeholder="会议名称，如：2026年度总结大会">
-      <input id="newMeetingDate" placeholder="会议日期，如 2026年10月9日（留空默认今天）">
-
-      <div style="font-size:14px;color:#374151;margin-top:4px">选择签到字段：</div>
-      <div class="field-checks">
-        <label><input type="checkbox" id="f_name" checked onchange="refreshOrderOptions()"> 姓名</label>
-        <label><input type="checkbox" id="f_phone" checked onchange="refreshOrderOptions()"> 电话</label>
-        <label><input type="checkbox" id="f_org" checked onchange="refreshOrderOptions()"> 单位</label>
-        <label><input type="checkbox" id="f_title" onchange="refreshOrderOptions()"> 职务</label>
-        <label><input type="checkbox" id="f_note" onchange="refreshOrderOptions()"> 备注</label>
+    <div class="topbar">
+      <div>当前用户：<strong id="whoUsername">-</strong> <span id="whoRole"></span></div>
+      <div class="row" style="margin:0">
+        <button class="btn btn-gray btn-sm" onclick="togglePwdCard()">修改账号</button>
+        <button class="btn btn-red btn-sm" onclick="logout()">退出登录</button>
       </div>
+    </div>
 
-      <div style="font-size:14px;color:#374151;margin:8px 0 6px">列顺序（从左到右，序号固定第 1 列）：</div>
-      <div class="order-row"><span>第 2 列：</span><select id="ord2" class="order-select"></select></div>
-      <div class="order-row"><span>第 3 列：</span><select id="ord3" class="order-select"></select></div>
-      <div class="order-row"><span>第 4 列：</span><select id="ord4" class="order-select"></select></div>
-      <div class="order-row"><span>第 5 列：</span><select id="ord5" class="order-select"></select></div>
-      <div class="order-row"><span>第 6 列：</span><select id="ord6" class="order-select"></select></div>
+    <div class="card hidden" id="pwdCard">
+      <h2>修改我的账号</h2>
+      <input id="oldPwd" type="password" placeholder="原密码">
+      <input id="newUsername" placeholder="新用户名（3-20 位）">
+      <input id="newPwd" type="password" placeholder="新密码（≥9 位，含大小写字母、数字、符号）">
+      <input id="newPwd2" type="password" placeholder="确认新密码">
+      <button class="btn" onclick="changeAccount()">确认修改</button>
+      <div class="stat" id="pwdMsg"></div>
+    </div>
 
-      <button class="btn btn-orange" style="margin-top:10px" onclick="createMeeting()">创建会议</button>
+    <div class="card hidden" id="userCard">
+      <h2>用户管理 <span id="adminCountBadge" style="font-size:12px;color:#6b7280;font-weight:normal"></span></h2>
+      <div id="userList"></div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #eee">
+        <div style="font-size:14px;color:#374151;margin-bottom:6px">创建新用户：</div>
+        <input id="newUserName" placeholder="用户名（3-20 位字母/数字/下划线）">
+        <input id="newUserPwd" type="password" placeholder="密码（≥9 位，含大小写字母、数字、符号）">
+        <select id="newUserRole">
+          <option value="user">普通用户（只能管理自己的数据）</option>
+          <option value="admin">管理员（可查看所有用户数据）</option>
+        </select>
+        <button class="btn btn-orange" onclick="createUser()">创建用户</button>
+        <div class="stat" id="userMsg"></div>
+      </div>
+    </div>
+
+    <div class="card hidden" id="dataSourceCard">
+      <h2>查看谁的数据</h2>
+      <select id="dataOwnerSelect" onchange="onDataOwnerChange()">
+        <option value="">（我的数据）</option>
+      </select>
+      <div class="stat">管理员可以切换查看任意用户的数据。</div>
     </div>
 
     <div class="card">
-      <h2>会议列表</h2>
+      <h2>创建会议</h2>
+      <input id="newMeetingName" placeholder="会议名称，如：2026年度总结大会">
+      <input id="newMeetingDate" placeholder="会议日期，留空默认今天">
+
+      <div style="font-size:14px;color:#374151;margin-top:6px">勾选需要签到的预设字段：</div>
+      <div class="field-grid" id="fieldGrid"></div>
+
+      <div style="font-size:14px;color:#374151;margin:10px 0 4px">添加自定义列：</div>
+      <div class="row">
+        <input id="newCustomField" placeholder="如：是否需要用餐" style="flex:1;margin:0">
+        <button class="btn btn-gray" onclick="addCustomField()">添加</button>
+      </div>
+
+      <div style="font-size:14px;color:#374151;margin:14px 0 6px">列顺序（可调整先后顺序，勾选/取消必填）：</div>
+      <div class="order-list" id="orderList"></div>
+      <div class="stat" id="orderEmptyHint" style="text-align:center;padding:14px;color:#9ca3af">还没有任何列，请先勾选预设字段或添加自定义列</div>
+
+      <button class="btn btn-orange" style="margin-top:14px;width:100%" onclick="createMeeting()">创建会议</button>
+    </div>
+
+    <div class="card">
+      <h2>我的会议</h2>
       <div id="meetingList"></div>
     </div>
 
     <div class="card">
       <h2>签到记录</h2>
-      <select id="meetingSelect" onchange="loadRecords()">
-        <option value="">请选择会议</option>
-      </select>
+      <select id="meetingSelect" onchange="loadRecords()"><option value="">请选择会议</option></select>
       <div class="row">
         <button class="btn btn-green btn-sm" onclick="exportExcel()">导出 Excel</button>
         <button class="btn btn-gray btn-sm" onclick="loadRecords()">刷新</button>
       </div>
       <div class="stat" id="stat"></div>
-      <div style="overflow-x:auto">
-        <table id="tbl">
-          <thead><tr id="tblHead"><th>姓名</th><th>电话</th><th>单位</th><th>时间</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div style="text-align:right;margin-top:10px">
-      <button class="btn btn-red btn-sm" onclick="logout()">退出登录</button>
+      <div style="overflow-x:auto"><table id="tbl"><thead><tr id="tblHead"></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 
@@ -121,191 +172,356 @@ tr:last-child td{border-bottom:0}
 
 <script src="/qrcode.min.js"></script>
 <script>
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+let loggedIn = false, role = 'user', currentMeetingId = '';
+let dataOwnerId = '';
 
-let loggedIn = false;
-let currentMeetingId = '';
-let currentFields = {};
+// 统一顺序列表：每一项 { type:'field'|'custom', key?, label, required:true/false }
+let orderList = [];
 
-const FIELD_LABELS = { org: '单位', name: '姓名', title: '职务', phone: '电话', note: '备注' };
+const FIELD_LABELS = { name:'姓名', gender:'性别', phone:'电话', id_card:'身份证号', org:'单位',
+  department:'部门', class_name:'班级', title:'职务', identity:'身份', employee_no:'工号',
+  student_no:'学号', reg_no:'报名号', invite_code:'邀请码', note:'备注', signature:'手写签名' };
+const ALL_FIELDS = Object.keys(FIELD_LABELS);
 
-function refreshOrderOptions() {
-  const checked = ['org','name','title','phone','note'].filter(k => {
-    const el = document.getElementById('f_' + k);
-    return el && el.checked;
-  });
-  const defaultOrder = ['org','name','title','phone','note'].filter(k => checked.includes(k));
+// 字段默认必填规则：备注默认选填，其他默认必填
+function defaultRequired(key) {
+  return key !== 'note';
+}
 
-  const selects = ['ord2','ord3','ord4','ord5','ord6'].map(id => document.getElementById(id));
-  selects.forEach((sel, idx) => {
-    const prevValue = sel.value;
-    sel.innerHTML = '<option value="">（不显示）</option>';
-    checked.forEach(k => {
-      const opt = document.createElement('option');
-      opt.value = k;
-      opt.textContent = FIELD_LABELS[k];
-      sel.appendChild(opt);
-    });
-    if (prevValue && checked.includes(prevValue)) {
-      sel.value = prevValue;
-    } else {
-      sel.value = defaultOrder[idx] || '';
-    }
+function renderFieldGrid() {
+  const grid = document.getElementById('fieldGrid');
+  grid.innerHTML = '';
+  ALL_FIELDS.forEach(key => {
+    const label = document.createElement('label');
+    const checked = orderList.some(o => o.type === 'field' && o.key === key);
+    label.innerHTML = `<input type="checkbox" data-key="${key}" ${checked ? 'checked' : ''} onchange="onFieldToggle('${key}', this.checked)"> ${FIELD_LABELS[key]}`;
+    grid.appendChild(label);
   });
 }
 
-fetch('/api/check-login').then(r=>r.json()).then(j=>{
-  if (j.loggedIn) {
-    loggedIn = true;
-    document.getElementById('loginCard').classList.add('hidden');
-    document.getElementById('mainArea').classList.remove('hidden');
-    loadMeetings();
+function onFieldToggle(key, checked) {
+  if (checked) {
+    if (!orderList.some(o => o.type === 'field' && o.key === key)) {
+      orderList.push({ type: 'field', key, label: FIELD_LABELS[key], required: defaultRequired(key) });
+    }
+  } else {
+    orderList = orderList.filter(o => !(o.type === 'field' && o.key === key));
   }
+  renderOrderList();
+}
+
+function addCustomField() {
+  const v = document.getElementById('newCustomField').value.trim();
+  if (!v) return;
+  if (orderList.some(o => o.type === 'custom' && o.label === v)) { alert('该列已存在'); return; }
+  orderList.push({ type: 'custom', label: v, required: true });
+  document.getElementById('newCustomField').value = '';
+  renderOrderList();
+}
+
+function renderOrderList() {
+  const list = document.getElementById('orderList');
+  const hint = document.getElementById('orderEmptyHint');
+  list.innerHTML = '';
+  if (orderList.length === 0) { hint.style.display = 'block'; return; }
+  hint.style.display = 'none';
+  orderList.forEach((o, idx) => {
+    const item = document.createElement('div');
+    item.className = 'order-item';
+    const tag = o.type === 'field' ? '<span class="tag">预设</span>' : '<span class="tag tag-custom">自定义</span>';
+    const reqChecked = o.required ? 'checked' : '';
+    item.innerHTML = `<span class="lbl">${idx+1}. ${o.label} ${tag}</span>
+      <label class="req-label"><input type="checkbox" ${reqChecked} onchange="toggleRequired(${idx}, this.checked)"> 必填</label>
+      <button type="button" onclick="moveOrder(${idx}, -1)">↑</button>
+      <button type="button" onclick="moveOrder(${idx}, 1)">↓</button>
+      <button type="button" class="danger" onclick="removeOrder(${idx})">×</button>`;
+    list.appendChild(item);
+  });
+}
+
+function toggleRequired(idx, checked) {
+  if (!orderList[idx]) return;
+  orderList[idx].required = !!checked;
+}
+
+function moveOrder(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= orderList.length) return;
+  [orderList[idx], orderList[newIdx]] = [orderList[newIdx], orderList[idx]];
+  renderOrderList();
+}
+
+function removeOrder(idx) {
+  const o = orderList[idx];
+  orderList.splice(idx, 1);
+  if (o.type === 'field') {
+    const cb = document.querySelector(`#fieldGrid input[data-key="${o.key}"]`);
+    if (cb) cb.checked = false;
+  }
+  renderOrderList();
+}
+
+fetch('/api/check-login').then(r=>r.json()).then(j => {
+  if (!j.loggedIn) return;
+  if (j.isRecovery) { enterRecovery(); return; }
+  enterMain(j, false);
 });
 
-refreshOrderOptions();
+function enterRecovery() {
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('recoveryArea').classList.remove('hidden');
+  loadRecoveryAdmins();
+}
+function enterMain(j, mustChange) {
+  loggedIn = true;
+  role = j.role || 'user';
+  document.getElementById('whoUsername').textContent = j.username || '-';
+  document.getElementById('whoRole').innerHTML = role === 'admin'
+    ? '<span class="badge badge-admin">管理员</span>' : '<span class="badge badge-user">用户</span>';
+  document.getElementById('loginCard').classList.add('hidden');
+  document.getElementById('mainArea').classList.remove('hidden');
+  if (role === 'admin') {
+    document.getElementById('userCard').classList.remove('hidden');
+    document.getElementById('dataSourceCard').classList.remove('hidden');
+    loadUsers();
+    loadDataOwners();
+  }
+  if (mustChange) {
+    document.getElementById('mainArea').classList.add('hidden');
+    document.getElementById('mustChangeArea').classList.remove('hidden');
+  }
+  renderFieldGrid();
+  renderOrderList();
+  loadMeetings();
+}
+function togglePwdCard(){ document.getElementById('pwdCard').classList.toggle('hidden'); }
 
 function login(){
-  var username = document.getElementById('username').value.trim();
-  var pwd = document.getElementById('pwd').value;
-  if (!username || !pwd) { document.getElementById('loginMsg').textContent = '请输入用户名和密码'; return; }
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('pwd').value;
+  if (!username || !password) { document.getElementById('loginMsg').textContent = '请输入用户名和密码'; return; }
   document.getElementById('loginMsg').textContent = '登录中…';
-  fetch('/api/login', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({username, password: pwd})
-  }).then(r=>r.json()).then(j=>{
-    if (j.ok) {
-      loggedIn = true;
-      document.getElementById('loginCard').classList.add('hidden');
-      document.getElementById('mainArea').classList.remove('hidden');
-      loadMeetings();
-    } else {
-      document.getElementById('loginMsg').textContent = j.msg || '登录失败';
-    }
-  }).catch(()=>{ document.getElementById('loginMsg').textContent = '网络异常'; });
+  fetch('/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username, password})})
+    .then(r=>r.json()).then(j => {
+      if (!j.ok) { document.getElementById('loginMsg').textContent = j.msg || '登录失败'; return; }
+      if (j.isRecovery) { enterRecovery(); return; }
+      document.getElementById('username').value = '';
+      document.getElementById('pwd').value = '';
+      document.getElementById('loginMsg').textContent = '';
+      enterMain(j, !!j.mustChange);
+    }).catch(()=>{ document.getElementById('loginMsg').textContent = '网络异常'; });
+}
+function logout(){ fetch('/api/logout', {method:'POST'}).then(()=>location.reload()); }
+
+function submitMustChange(){
+  const newUsername = document.getElementById('mcNewUsername').value.trim();
+  const newPassword = document.getElementById('mcNewPassword').value;
+  const newPassword2 = document.getElementById('mcNewPassword2').value;
+  const msg = document.getElementById('mcMsg');
+  if (newPassword !== newPassword2) { msg.textContent = '两次密码不一致'; msg.style.color = '#dc2626'; return; }
+  msg.textContent = '提交中…'; msg.style.color = '#6b7280';
+  fetch('/api/change-account', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({newUsername, newPassword})})
+    .then(r=>r.json()).then(j => {
+      if (j.ok) { alert('修改成功，请重新登录'); location.reload(); }
+      else { msg.textContent = j.msg || '失败'; msg.style.color = '#dc2626'; }
+    });
 }
 
-function logout(){
-  fetch('/api/logout', {method:'POST'}).then(()=>{
-    loggedIn = false;
-    document.getElementById('loginCard').classList.remove('hidden');
-    document.getElementById('mainArea').classList.add('hidden');
+function changeAccount(){
+  const oldPassword = document.getElementById('oldPwd').value;
+  const newUsername = document.getElementById('newUsername').value.trim();
+  const newPassword = document.getElementById('newPwd').value;
+  const newPwd2 = document.getElementById('newPwd2').value;
+  const msg = document.getElementById('pwdMsg');
+  if (newPassword !== newPwd2) { msg.textContent = '两次密码不一致'; msg.style.color = '#dc2626'; return; }
+  msg.textContent = '提交中…'; msg.style.color = '#6b7280';
+  fetch('/api/change-account', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({oldPassword, newUsername, newPassword})})
+    .then(r=>r.json()).then(j => {
+      if (j.ok) { alert('修改成功，请重新登录'); location.reload(); }
+      else { msg.textContent = j.msg || '失败'; msg.style.color = '#dc2626'; }
+    });
+}
+
+function loadUsers(){
+  fetch('/api/users').then(r=>r.json()).then(j => {
+    if (!j.ok) return;
+    document.getElementById('adminCountBadge').textContent = '（管理员 ' + j.adminCount + ' / 3）';
+    const list = document.getElementById('userList');
+    list.innerHTML = '';
+    j.data.forEach(u => {
+      const div = document.createElement('div');
+      div.className = 'meeting-item';
+      const roleBadge = u.role === 'admin' ? '<span class="badge badge-admin">管理员</span>' : '<span class="badge badge-user">用户</span>';
+      const isSelf = u.id === j.currentUserId;
+      const delBtn = isSelf
+        ? '<button class="btn btn-sm btn-gray" disabled>（自己）</button>'
+        : `<button class="btn btn-sm btn-red" onclick="delUser(${u.id},'${u.username.replace(/'/g,"\\'")}')">删除</button>`;
+      div.innerHTML = `<span class="name">${u.username} ${roleBadge}</span>${delBtn}
+        <div class="meta">创建时间：${u.created_at}</div>`;
+      list.appendChild(div);
+    });
   });
+}
+function createUser(){
+  const username = document.getElementById('newUserName').value.trim();
+  const password = document.getElementById('newUserPwd').value;
+  const r = document.getElementById('newUserRole').value;
+  const msg = document.getElementById('userMsg');
+  if (!username || !password) { msg.textContent = '请填写用户名和密码'; msg.style.color = '#dc2626'; return; }
+  msg.textContent = '提交中…';
+  fetch('/api/users', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username, password, role: r})})
+    .then(r=>r.json()).then(j => {
+      if (j.ok) {
+        msg.textContent = '创建成功'; msg.style.color = '#16a34a';
+        document.getElementById('newUserName').value = '';
+        document.getElementById('newUserPwd').value = '';
+        document.getElementById('newUserRole').value = 'user';
+        loadUsers(); loadDataOwners();
+      } else { msg.textContent = j.msg || '失败'; msg.style.color = '#dc2626'; }
+    });
+}
+function delUser(id, name){
+  if (!confirm(`确定删除用户「${name}」及其所有会议和签到记录？`)) return;
+  fetch('/api/users/' + id, {method:'DELETE'}).then(r=>r.json()).then(j => {
+    if (j.ok) { loadUsers(); loadDataOwners(); loadMeetings(); }
+    else alert(j.msg || '删除失败');
+  });
+}
+
+function loadDataOwners(){
+  fetch('/api/users').then(r=>r.json()).then(j => {
+    if (!j.ok) return;
+    const sel = document.getElementById('dataOwnerSelect');
+    sel.innerHTML = '<option value="">（我的数据）</option>';
+    j.data.forEach(u => {
+      if (u.id === j.currentUserId) return;
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.textContent = u.username + '（' + (u.role === 'admin' ? '管理员' : '用户') + '）';
+      sel.appendChild(opt);
+    });
+  });
+}
+function onDataOwnerChange(){
+  dataOwnerId = document.getElementById('dataOwnerSelect').value;
+  loadMeetings();
 }
 
 function loadMeetings(){
-  fetch('/api/meetings').then(r=>r.json()).then(j=>{
+  let url = '/api/meetings';
+  if (role === 'admin' && dataOwnerId) url += '?user_id=' + dataOwnerId;
+  fetch(url).then(r=>r.json()).then(j => {
     if (!j.ok) return;
-    var list = document.getElementById('meetingList');
-    var select = document.getElementById('meetingSelect');
-    list.innerHTML = '';
-    select.innerHTML = '<option value="">请选择会议</option>';
+    const list = document.getElementById('meetingList');
+    const sel = document.getElementById('meetingSelect');
+    list.innerHTML = ''; sel.innerHTML = '<option value="">请选择会议</option>';
     j.data.forEach(m => {
-      var badge = '';
-      if (m.expired) badge = '<span class="badge badge-exp">已过期</span>';
-      else if (m.leftDays <= 2) badge = '<span class="badge badge-warn">剩余 ' + m.leftDays + ' 天</span>';
-      else badge = '<span class="badge badge-ok">剩余 ' + m.leftDays + ' 天</span>';
-
-      var div = document.createElement('div');
+      const badge = m.expired ? '<span class="badge badge-exp">已过期</span>' :
+        (m.leftDays <= 2 ? `<span class="badge badge-warn">剩余 ${m.leftDays} 天</span>` : `<span class="badge badge-ok">剩余 ${m.leftDays} 天</span>`);
+      const div = document.createElement('div');
       div.className = 'meeting-item';
-      div.innerHTML = `
-        <span class="name">${m.name} ${badge}</span>
+      div.innerHTML = `<span class="name">${m.name} ${badge}</span>
         <button class="btn btn-sm btn-orange" onclick="showQR('${m.code}','${m.name.replace(/'/g,"\\'")}')">二维码</button>
         <button class="btn btn-sm btn-gray" onclick="extendMeeting(${m.id})">延期7天</button>
         <button class="btn btn-sm btn-red" onclick="delMeeting(${m.id},'${m.name.replace(/'/g,"\\'")}',${m.count})">删除</button>
-        <div class="meta">日期：${m.meeting_date || '未设置'} · 编码：${m.code} · 已签到 ${m.count} 人</div>
-      `;
+        <div class="meta">日期：${m.meeting_date || '未设置'} · 编码：${m.code} · 已签到 ${m.count} 人</div>`;
       list.appendChild(div);
-
-      var opt = document.createElement('option');
-      opt.value = m.id;
-      opt.textContent = m.name;
-      select.appendChild(opt);
+      const opt = document.createElement('option');
+      opt.value = m.id; opt.textContent = m.name; sel.appendChild(opt);
     });
   });
 }
 
 function createMeeting(){
-  var name = document.getElementById('newMeetingName').value.trim();
+  const name = document.getElementById('newMeetingName').value.trim();
   if (!name) { alert('请输入会议名称'); return; }
-  var date = document.getElementById('newMeetingDate').value.trim();
-  var fields = {
-    name: document.getElementById('f_name').checked,
-    phone: document.getElementById('f_phone').checked,
-    org: document.getElementById('f_org').checked,
-    title: document.getElementById('f_title').checked,
-    note: document.getElementById('f_note').checked
-  };
-  const columnOrder = ['ord2','ord3','ord4','ord5','ord6']
-    .map(id => document.getElementById(id).value)
-    .filter(v => v);
-  const uniqueOrder = [];
-  columnOrder.forEach(k => { if (!uniqueOrder.includes(k)) uniqueOrder.push(k); });
-
-  fetch('/api/meetings', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({name, meetingDate: date, fields, columnOrder: uniqueOrder})
-  }).then(r=>r.json()).then(j=>{
-    if (j.ok) {
-      document.getElementById('newMeetingName').value = '';
-      document.getElementById('newMeetingDate').value = '';
-      loadMeetings();
+  if (orderList.length === 0) { alert('请至少勾选一个字段或添加自定义列'); return; }
+  const date = document.getElementById('newMeetingDate').value.trim();
+  const fields = {};
+  const columnOrder = [];
+  const customFields = [];
+  const requiredFields = [];
+  orderList.forEach(o => {
+    if (o.type === 'field') {
+      fields[o.key] = true;
+      columnOrder.push('field:' + o.key);
+      if (o.required) requiredFields.push('field:' + o.key);
     } else {
-      alert(j.msg || '创建失败');
+      columnOrder.push('custom:' + o.label);
+      customFields.push(o.label);
+      if (o.required) requiredFields.push('custom:' + o.label);
     }
   });
+  fetch('/api/meetings', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({name, meetingDate: date, fields, columnOrder, customFields, requiredFields})})
+    .then(r=>r.json()).then(j => {
+      if (j.ok) {
+        document.getElementById('newMeetingName').value = '';
+        document.getElementById('newMeetingDate').value = '';
+        orderList = [];
+        renderFieldGrid();
+        renderOrderList();
+        loadMeetings();
+      } else alert(j.msg || '创建失败');
+    });
 }
-
 function extendMeeting(id){
-  fetch('/api/meetings/' + id + '/extend', {method:'POST'}).then(r=>r.json()).then(j=>{
-    if (j.ok) loadMeetings();
-    else alert(j.msg || '延期失败');
+  fetch('/api/meetings/' + id + '/extend', {method:'POST'}).then(r=>r.json()).then(j => {
+    if (j.ok) loadMeetings(); else alert(j.msg);
   });
 }
-
 function delMeeting(id, name, count){
-  if (!confirm(`确定删除会议「${name}」？\n该会议已有 ${count} 条签到记录，删除后不可恢复。`)) return;
-  fetch('/api/meetings/' + id, {method:'DELETE'}).then(r=>r.json()).then(j=>{
-    if (j.ok) { loadMeetings(); loadRecords(); }
-    else alert(j.msg || '删除失败');
+  if (!confirm(`确定删除会议「${name}」？已有 ${count} 条记录，删除后不可恢复。`)) return;
+  fetch('/api/meetings/' + id, {method:'DELETE'}).then(r=>r.json()).then(j => {
+    if (j.ok) { loadMeetings(); loadRecords(); } else alert(j.msg);
   });
 }
 
 function loadRecords(){
-  var mid = document.getElementById('meetingSelect').value;
+  const mid = document.getElementById('meetingSelect').value;
   currentMeetingId = mid;
-  if (!mid) {
-    document.querySelector('#tbl tbody').innerHTML = '';
-    document.getElementById('stat').textContent = '';
-    return;
-  }
-  fetch('/api/records/' + mid).then(r=>r.json()).then(j=>{
-    if (!j.ok) { alert(j.msg || '加载失败'); return; }
-    currentFields = j.fields ? JSON.parse(j.fields) : {};
-    const orderArr = (j.columnOrder || '').split(',').map(s => s.trim()).filter(s => s);
-
-    var headHtml = '';
-    orderArr.forEach(key => {
-      if (currentFields[key]) headHtml += '<th>' + FIELD_LABELS[key] + '</th>';
-    });
-    ['org','name','title','phone','note'].forEach(key => {
-      if (currentFields[key] && !orderArr.includes(key)) {
-        headHtml += '<th>' + FIELD_LABELS[key] + '</th>';
+  if (!mid) { document.querySelector('#tbl tbody').innerHTML = ''; document.getElementById('tblHead').innerHTML = ''; document.getElementById('stat').textContent = ''; return; }
+  fetch('/api/records/' + mid).then(r=>r.json()).then(j => {
+    if (!j.ok) { alert(j.msg); return; }
+    let fields = {}, customArr = [], orderRaw = [];
+    try { fields = JSON.parse(j.fields || '{}'); } catch(e) {}
+    try { customArr = JSON.parse(j.customFields || '[]'); } catch(e) {}
+    try { orderRaw = JSON.parse(j.columnOrder || '[]'); } catch(e) {}
+    const order = [];
+    orderRaw.forEach(item => {
+      if (typeof item === 'string' && item.startsWith('field:')) {
+        const key = item.substring(6);
+        if (fields[key]) order.push({ type:'field', key });
+      } else if (typeof item === 'string' && item.startsWith('custom:')) {
+        order.push({ type:'custom', label: item.substring(7) });
+      } else if (typeof item === 'string') {
+        if (fields[item]) order.push({ type:'field', key: item });
+        else order.push({ type:'custom', label: item });
       }
     });
+    Object.keys(fields).forEach(k => {
+      if (fields[k] && !order.some(o => o.type==='field' && o.key===k)) order.push({ type:'field', key:k });
+    });
+    let headHtml = '<th>序号</th>';
+    order.forEach(o => { headHtml += `<th>${o.type==='field' ? (FIELD_LABELS[o.key] || o.key) : o.label}</th>`; });
     headHtml += '<th>时间</th>';
     document.getElementById('tblHead').innerHTML = headHtml;
-
-    var tb = document.querySelector('#tbl tbody');
-    tb.innerHTML = j.data.map(r => {
-      var row = '';
-      orderArr.forEach(key => {
-        if (currentFields[key]) row += `<td>${r[key]||''}</td>`;
-      });
-      ['org','name','title','phone','note'].forEach(key => {
-        if (currentFields[key] && !orderArr.includes(key)) row += `<td>${r[key]||''}</td>`;
+    const tb = document.querySelector('#tbl tbody');
+    tb.innerHTML = j.data.map((r, idx) => {
+      let row = '<td>' + (idx + 1) + '</td>';
+      order.forEach(o => {
+        if (o.type === 'field') {
+          if (o.key === 'signature' && r.signature && r.signature.startsWith('data:image/')) {
+            row += `<td><img src="${r.signature}" style="max-height:40px;max-width:80px"></td>`;
+          } else {
+            row += `<td>${(r[o.key] || '').toString().replace(/[<>]/g,'')}</td>`;
+          }
+        } else {
+          row += `<td>${(r.custom_values && r.custom_values[o.label]) || ''}</td>`;
+        }
       });
       row += `<td>${r.time}</td>`;
       return '<tr>' + row + '</tr>';
@@ -313,30 +529,53 @@ function loadRecords(){
     document.getElementById('stat').textContent = '共 ' + j.total + ' 人签到';
   });
 }
-
 function exportExcel(){
   if (!currentMeetingId) { alert('请先选择会议'); return; }
   window.open('/api/export/' + currentMeetingId);
 }
 
 function showQR(code, name){
-  var domain = prompt('请输入你的域名（含端口），例如 checkin.example.com:28474', location.host);
+  let defaultHost = location.host;
+  const domain = prompt('请输入域名（含端口），例如 ' + defaultHost + '\n如果是反向代理后访问，可去掉端口。', defaultHost);
   if (!domain) return;
-  var url = 'https://' + domain + '/?m=' + code;
-  var box = document.getElementById('qrBox');
+  const url = 'https://' + domain + '/?m=' + code;
+  const box = document.getElementById('qrBox');
   box.style.display = 'block';
-  box.innerHTML = `
-    <h3 style="margin:0 0 8px">${name} 签到二维码</h3>
+  box.innerHTML = `<h3 style="margin:0 0 8px">${name} 签到二维码</h3>
     <div class="qr-tip">📶 请用手机流量扫码，部分 WiFi 可能无法完成签到</div>
-    <div id="qrcode"></div>
-    <div class="link">${url}</div>
-  `;
-  new QRCode(document.getElementById('qrcode'), {
-    text: url, width: 220, height: 220,
-    colorDark: '#1f2937', colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
-  });
+    <div id="qrcode"></div><div class="link">${url}</div>`;
+  new QRCode(document.getElementById('qrcode'), { text: url, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.H });
   box.scrollIntoView({behavior:'smooth'});
+}
+
+function loadRecoveryAdmins(){
+  fetch('/api/recovery/admins').then(r=>r.json()).then(j => {
+    if (!j.ok) { alert(j.msg); return; }
+    const list = document.getElementById('recoveryAdminList');
+    list.innerHTML = '';
+    j.data.forEach(u => {
+      const div = document.createElement('div');
+      div.className = 'meeting-item';
+      div.innerHTML = `<span class="name">${u.username} <span class="badge badge-admin">管理员</span></span>
+        <button class="btn btn-sm btn-orange" onclick="recoveryResetPwd(${u.id},'${u.username.replace(/'/g,"\\'")}')">重置密码</button>
+        <button class="btn btn-sm btn-red" onclick="recoveryDel(${u.id},'${u.username.replace(/'/g,"\\'")}')">删除</button>
+        <div class="meta">创建时间：${u.created_at}</div>`;
+      list.appendChild(div);
+    });
+  });
+}
+function recoveryResetPwd(id, name){
+  const pwd = prompt(`为用户「${name}」设置新密码（≥9 位，含大小写字母、数字、符号）`);
+  if (!pwd) return;
+  fetch('/api/recovery/reset-password', {method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({userId: id, newPassword: pwd})})
+    .then(r=>r.json()).then(j => { alert(j.ok ? '重置成功' : (j.msg || '失败')); });
+}
+function recoveryDel(id, name){
+  if (!confirm(`确定删除管理员「${name}」及其所有数据？`)) return;
+  fetch('/api/recovery/admins/' + id, {method:'DELETE'}).then(r=>r.json()).then(j => {
+    if (j.ok) loadRecoveryAdmins(); else alert(j.msg || '删除失败');
+  });
 }
 </script>
 </body>
